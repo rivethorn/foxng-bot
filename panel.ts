@@ -4,36 +4,23 @@ const MAIN_ADDRESS = addresses[0]!;
 const BASE_PATH = "/panel/api/inbounds";
 const LOGIN_PATH = "/login/";
 const ADD_CLIENT_PATH = "/addClient";
-const GET_CLIENT_PATH = `/get/{id}`;
+const GET_INBOUNDS_PATH = "/list";
 const UUID_PATH = "/panel/api/server/getNewUUID";
-
-interface User {
-    username: string;
-    password: string;
-}
-
-interface UUID {
-    success?: string;
-    msg?: string;
-    obj: {
-        uuid: string;
-    };
-}
-
-interface AddClientBody {
-    id: number;
-    settings: string;
-}
 
 let authToken: string | null = null;
 
-export function printAd() {
-    console.log(addresses[0]);
-}
-
-export function unix24Hours() {
+function unix24Hours() {
     const now = Date.now();
     return now + 24 * 60 * 60 * 1000;
+}
+
+function unix30Days() {
+    const now = Date.now();
+    return now + 24 * 30 * 60 * 60 * 1000;
+}
+
+function GB(gbs: number) {
+    return gbs * 1073741824;
 }
 
 async function loginToPanel(headers: Headers) {
@@ -101,10 +88,10 @@ async function addTestClient(
                     flow: "",
                     email: userId.toString(),
                     limitIp: 0,
-                    totalGB: 1073741824,
+                    totalGB: GB(1),
                     expiryTime: unix24Hours(),
                     enable: true,
-                    tgId: "",
+                    tgId: userId,
                     subId: "",
                     comment: "",
                     reset: 0,
@@ -137,5 +124,61 @@ export async function HandleTestAccount(userId: number) {
 
     const uuid = await getUUID(headers);
 
-    await addTestClient(headers, uuid, 2, userId);
+    try {
+        await addTestClient(headers, uuid, 2, userId);
+    } catch {
+        console.error("Failed to add test client");
+    }
+
+    const listInbound = await getInbounds(headers);
+
+    const conf = await generateConfigURL(userId, listInbound);
+
+    console.log("Config: ", conf);
+}
+
+async function getInbounds(headers: Headers) {
+    console.log("start getInbounds");
+
+    // Login if needed
+    if (authToken) {
+        headers.set("Cookie", authToken);
+    }
+
+    const req = new Request(`${MAIN_ADDRESS}${BASE_PATH}${GET_INBOUNDS_PATH}`, {
+        method: "GET",
+        headers,
+        credentials: "include",
+    });
+
+    const res = await fetch(req);
+
+    const js = (await res.json()) as Omit<ListResp, "obj"> & {
+        obj: (Omit<Obj, "settings" | "streamSettings"> & {
+            settings: string;
+            streamSettings: string;
+        })[];
+    };
+
+    // Parse settings JSON strings to objects
+    const parsed: ListResp = {
+        ...js,
+        obj: js.obj.map((obj) => ({
+            ...obj,
+            settings: JSON.parse(obj.settings) as Settings,
+            streamSettings: JSON.parse(obj.streamSettings) as StreamSettings,
+        })),
+    };
+
+    return parsed;
+}
+
+async function generateConfigURL(tgID: number, inbounds: ListResp) {
+    for (let obj of inbounds.obj) {
+        for (let client of obj.settings.clients) {
+            if (tgID === client.tgId) {
+                return `${obj.protocol}://${client.id}@${new URL(MAIN_ADDRESS).hostname}:${obj.port}?type=${obj.streamSettings.network}&encryption=${obj.settings.encryption || "none"}&security=${obj.streamSettings.security}#${obj.remark}-${client.email}`;
+            }
+        }
+    }
 }

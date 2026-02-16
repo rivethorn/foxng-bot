@@ -1,12 +1,12 @@
 import dotenv from "dotenv";
 import { Bot } from "grammy";
-import { greet, testConfTxt } from "./messages";
+import { contactTxt, greet, testConfTxt } from "./messages";
 import { mainMenu } from "./keyboards";
-import { HandleTestAccount, printAd } from "./panel";
+import { HandleTestAccount } from "./panel";
 
 dotenv.config({ quiet: true });
 
-const bot = new Bot(process.env.BOT_TOKEN!);
+export const bot = new Bot(process.env.BOT_TOKEN!);
 
 bot.command("start", (ctx) => ctx.reply(greet, { reply_markup: mainMenu }));
 
@@ -16,7 +16,9 @@ bot.on("message", async (ctx) => {
             console.log("test config requested");
             console.log(ctx.from.id);
             await HandleTestAccount(ctx.from.id);
+            break;
 
+        case contactTxt:
             break;
 
         default:
@@ -26,4 +28,3 @@ bot.on("message", async (ctx) => {
 
 bot.start();
 console.log("running");
-printAd();
