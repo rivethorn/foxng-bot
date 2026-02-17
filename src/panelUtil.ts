@@ -9,20 +9,40 @@ export const UUID_PATH = "/panel/api/server/getNewUUID";
 
 export let authToken: string | null = null;
 
+/**
+ *
+ * @returns 24 hours from now, in Unix time
+ */
 export function unix24Hours() {
     const now = Date.now();
     return now + 24 * 60 * 60 * 1000;
 }
 
+/**
+ *
+ * @returns 30 days from now, in Unix time
+ */
 export function unix30Days() {
     const now = Date.now();
     return now + 24 * 30 * 60 * 60 * 1000;
 }
 
+/**
+ * For some reason, MHSanaei thought it was a good idea to use BYTES as the unit for limiting the total flow.
+ * @param gbs How many GigaBytes do you need?
+ * @returns The amount of bytes
+ */
 export function GB(gbs: number) {
     return gbs * 1073741824;
 }
 
+/**
+ * Function for logging into your panel.
+ * Takes the username and password from .env file.
+ *
+ * @param headers The request headers, compilent to what the panel's API needs.
+ * https://documenter.getpostman.com/view/5146551/2sB3QCTuB6
+ */
 export async function loginToPanel(headers: Headers) {
     console.log("start login...");
     const user: User = {
@@ -50,9 +70,15 @@ export async function loginToPanel(headers: Headers) {
     }
 }
 
+/**
+ * Function for generating a complient UUID.
+ *
+ * Recieves the UUID from the panel itself.
+ * @param headers The request headers, compilent to what the panel's API needs.
+ * https://documenter.getpostman.com/view/5146551/2sB3QCTuB6
+ * @returns A string of generated UUID.
+ */
 export async function getUUID(headers: Headers) {
-    console.log("getting uuid...");
-
     // Add cookie to request if we have it
     if (authToken) {
         headers.set("Cookie", authToken);
@@ -68,10 +94,15 @@ export async function getUUID(headers: Headers) {
     const body = (await res.json()) as UUID;
     const uuid = body.obj.uuid;
 
-    console.log(body.obj.uuid);
     return uuid;
 }
 
+/**
+ * Function to get all inbounds
+ * @param headers The request headers, compilent to what the panel's API needs.
+ * https://documenter.getpostman.com/view/5146551/2sB3QCTuB6
+ * @returns A ListResponse object with all inbounds data.
+ */
 export async function getInbounds(headers: Headers) {
     console.log("start getInbounds");
 
@@ -108,6 +139,13 @@ export async function getInbounds(headers: Headers) {
     return parsed;
 }
 
+/**
+ * Function that frankensteins the data to get to the config URL; 'cause for some reson, MHSanaei thought noone needed config URL.
+ *
+ * @param tgID Telegram User ID of the user you want to generate config URL for.
+ * @param inbounds The object reveived from getInbounds function.
+ * @returns The v2ray config URL for the user.
+ */
 export async function generateConfigURL(tgID: number, inbounds: ListResp) {
     for (let obj of inbounds.obj) {
         for (let client of obj.settings.clients) {

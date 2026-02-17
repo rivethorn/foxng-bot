@@ -54,7 +54,12 @@ async function addTestClient(
     return status;
 }
 
-export async function HandleTestAccount(userId: number) {
+/**
+ * Wrapper function around add the bits and pieces for adding a test client.
+ * @param userId Telegram User ID of the user you want to add to the clients.
+ * @param inboundID The ID of the inbound you want to add the client to.
+ */
+export async function HandleTestAccount(userId: number, inboundID: number) {
     const waitMgs = await bot.api.sendMessage(userId, creatingTestConfTxt);
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
