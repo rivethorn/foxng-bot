@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
 import { Bot } from "grammy";
 import { mainMenu } from "./keyboards";
-import { HandleTestAccount } from "./panel";
 import { greet, testConfTxt, contactTxt } from "./messages";
+import { HandleTestAccount } from "./testAccount";
 
 dotenv.config({ quiet: true });
 
