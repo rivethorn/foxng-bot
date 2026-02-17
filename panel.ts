@@ -1,3 +1,7 @@
+import { sleep } from "bun";
+import { bot } from ".";
+import { creatingTestConfTxt } from "./messages";
+
 const addresses = process.env.PANEL_ADDRESS!.split(",");
 
 const MAIN_ADDRESS = addresses[0]!;
@@ -108,11 +112,12 @@ async function addTestClient(
     });
 
     const res = await fetch(req);
-    const status = await res.json();
-    console.log(status);
+    const status = (await res.json()) as Partial<ListResp>;
+    return status;
 }
 
 export async function HandleTestAccount(userId: number) {
+    const waitMgs = await bot.api.sendMessage(userId, creatingTestConfTxt);
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
     headers.set("Accept", "application/json");
@@ -124,10 +129,16 @@ export async function HandleTestAccount(userId: number) {
 
     const uuid = await getUUID(headers);
 
-    try {
-        await addTestClient(headers, uuid, 2, userId);
-    } catch {
-        console.error("Failed to add test client");
+    const addResult = await addTestClient(headers, uuid, 2, userId);
+
+    if (addResult.msg?.includes("Duplicate")) {
+        await sleep(500);
+
+        await bot.api.deleteMessage(userId, waitMgs.message_id);
+
+        await bot.api.sendMessage(userId, "شرمنده، هر کی فقط یکی!!");
+
+        return;
     }
 
     const listInbound = await getInbounds(headers);
@@ -135,6 +146,16 @@ export async function HandleTestAccount(userId: number) {
     const conf = await generateConfigURL(userId, listInbound);
 
     console.log("Config: ", conf);
+
+    await sleep(500);
+
+    await bot.api.deleteMessage(userId, waitMgs.message_id);
+
+    const confirmMsg = `<b>کانفیگ شما با موفقیت ساخته شد</b>
+    
+<code>${conf}</code>
+    `;
+    await bot.api.sendMessage(userId, confirmMsg, { parse_mode: "HTML" });
 }
 
 async function getInbounds(headers: Headers) {

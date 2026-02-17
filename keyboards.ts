@@ -1,5 +1,5 @@
 import { Keyboard } from "grammy";
-import { buySubTxt, contactTxt, mySubTxt, testConfTxt } from "./messages";
+import { testConfTxt, mySubTxt, contactTxt, buySubTxt } from "./messages";
 
 export const mainMenu = new Keyboard()
     .text(testConfTxt)

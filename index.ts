@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
 import { Bot } from "grammy";
-import { contactTxt, greet, testConfTxt } from "./messages";
 import { mainMenu } from "./keyboards";
 import { HandleTestAccount } from "./panel";
+import { greet, testConfTxt, contactTxt } from "./messages";
 
 dotenv.config({ quiet: true });
 
@@ -26,5 +26,5 @@ bot.on("message", async (ctx) => {
     }
 });
 
-bot.start();
-console.log("running");
+console.log("starting...");
+await bot.start();
