@@ -15,7 +15,7 @@ bot.on("message", async (ctx) => {
         case testConfTxt:
             console.log("test config requested");
             console.log(ctx.from.id);
-            await HandleTestAccount(ctx.from.id);
+            await HandleTestAccount(ctx.from.id, 2);
             break;
 
         case contactTxt:

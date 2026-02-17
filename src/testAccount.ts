@@ -72,7 +72,7 @@ export async function HandleTestAccount(userId: number, inboundID: number) {
 
     const uuid = await getUUID(headers);
 
-    const addResult = await addTestClient(headers, uuid, 2, userId);
+    const addResult = await addTestClient(headers, uuid, inboundID, userId);
 
     if (addResult.msg?.includes("Duplicate")) {
         await sleep(500);
