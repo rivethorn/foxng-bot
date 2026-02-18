@@ -1,18 +1,15 @@
 import { Keyboard } from "grammy";
-import {
-  testConfTxt,
-  mySubTxt,
-  contactTxt,
-  buySubTxt,
-  tutorialBtnTxt,
-} from "./messages";
+import { mySubTxt, tutorialBtnTxt, renewSubBtn, buySubBtn } from "./messages";
+
+export const shareContactKey = new Keyboard()
+  .requestContact("☎️ ارسال شماره موبایل")
+  .resized()
+  .oneTime();
 
 export const mainMenu = new Keyboard()
-  .text(testConfTxt)
-  .text(mySubTxt)
-  .row()
-  .text(contactTxt)
-  .text(buySubTxt)
+  .text(renewSubBtn)
+  .text(buySubBtn)
   .row()
   .text(tutorialBtnTxt)
+  .text(mySubTxt)
   .resized();
