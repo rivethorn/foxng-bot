@@ -46,8 +46,8 @@ export function GB(gbs: number) {
 export async function loginToPanel(headers: Headers) {
   console.log("start login...");
   const user: User = {
-    username: process.env.USERNAME!,
-    password: process.env.PASSWORD!,
+    username: process.env.PANEL_USERNAME!,
+    password: process.env.PANEL_PASSWORD!,
   };
   const req = new Request(`${MAIN_ADDRESS}${LOGIN_PATH}`, {
     method: "POST",
