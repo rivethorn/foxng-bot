@@ -155,3 +155,31 @@ export async function generateConfigURL(tgID: number, inbounds: ListResp) {
     }
   }
 }
+
+export async function userHasAccount(tgID: number) {
+  const headers = new Headers();
+  headers.set("Content-Type", "application/json");
+  headers.set("Accept", "application/json");
+
+  // Login if needed
+  if (!authToken) {
+    await loginToPanel(headers);
+  }
+
+  let configs: Config[] = [];
+  const inbounds = await getInbounds(headers);
+
+  for (let obj of inbounds.obj) {
+    for (let client of obj.settings.clients) {
+      if (tgID === Number(client.comment)) {
+        let statuss = client.enable;
+        configs.push({
+          email: `${statuss ? "🟢" : "🛑"} ${client.email}`,
+          status: client.enable,
+        });
+      }
+    }
+  }
+
+  return configs;
+}
