@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import { Bot } from "grammy";
 import { mainMenu } from "./keyboards";
 import { greet, testConfTxt, contactTxt } from "./messages";
-import { HandleTestAccount } from "./elavuationAcc";
+import { HandleTestAccount } from "./evaluationAcc";
 
 dotenv.config({ quiet: true });
 
