@@ -46,8 +46,8 @@ export function GB(gbs: number) {
 export async function loginToPanel(headers: Headers) {
   console.log("start login...");
   const user: User = {
-    username: process.env.USERNAME!,
-    password: process.env.PASSWORD!,
+    username: process.env.PANEL_USERNAME!,
+    password: process.env.PANEL_PASSWORD!,
   };
   const req = new Request(`${MAIN_ADDRESS}${LOGIN_PATH}`, {
     method: "POST",
@@ -154,4 +154,32 @@ export async function generateConfigURL(tgID: number, inbounds: ListResp) {
       }
     }
   }
+}
+
+export async function userHasAccount(tgID: number) {
+  const headers = new Headers();
+  headers.set("Content-Type", "application/json");
+  headers.set("Accept", "application/json");
+
+  // Login if needed
+  if (!authToken) {
+    await loginToPanel(headers);
+  }
+
+  let configs: Config[] = [];
+  const inbounds = await getInbounds(headers);
+
+  for (let obj of inbounds.obj) {
+    for (let client of obj.settings.clients) {
+      if (tgID === Number(client.comment)) {
+        let statuss = client.enable;
+        configs.push({
+          email: `${statuss ? "🟢" : "🛑"} ${client.email}`,
+          status: client.enable,
+        });
+      }
+    }
+  }
+
+  return configs;
 }
