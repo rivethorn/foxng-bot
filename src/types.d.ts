@@ -1,3 +1,8 @@
+interface Config {
+  email: string;
+  status: boolean;
+}
+
 interface User {
   username: string;
   password: string;
