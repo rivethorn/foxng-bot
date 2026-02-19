@@ -4,6 +4,7 @@ export const MAIN_ADDRESS = addresses[0]!;
 export const BASE_PATH = "/panel/api/inbounds";
 export const LOGIN_PATH = "/login/";
 export const ADD_CLIENT_PATH = "/addClient";
+export const UPDATE_CLIENT_PATH = "/updateClient";
 export const GET_INBOUNDS_PATH = "/list";
 export const UUID_PATH = "/panel/api/server/getNewUUID";
 
@@ -179,6 +180,7 @@ export async function userHasAccount(tgID: number) {
         configs.push({
           email: `${obj.clientStats[idx]?.enable ? "🟢" : "🛑"} ${client.email}`,
           status: obj.clientStats[idx]?.enable!,
+          uuid: client.id,
         });
       }
     });

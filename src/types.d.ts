@@ -1,6 +1,7 @@
 interface Config {
   email: string;
   status: boolean;
+  uuid: string;
 }
 
 interface User {

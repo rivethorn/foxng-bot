@@ -14,7 +14,17 @@ import {
 } from "./messages";
 import { HandleTestAccount } from "./evaluationAcc";
 import { HandleRenewAccount } from "./renewAcc";
-import { ADMIN_ID, renewCache } from "./panelUtil";
+import {
+  ADMIN_ID,
+  authToken,
+  BASE_PATH,
+  GB,
+  loginToPanel,
+  MAIN_ADDRESS,
+  renewCache,
+  unix30Days,
+  UPDATE_CLIENT_PATH,
+} from "./panelUtil";
 import { HandleCheckAccount } from "./checkAcc";
 
 dotenv.config({ quiet: true });
@@ -25,6 +35,7 @@ const waitingForRenewImage = new Set<number>();
 
 // Track pending renewals by userId
 const pendingRenewals = new Map<number, { photoFileId: string }>();
+const pendingUUID = new Map<number, { UUID: string }>();
 
 bot.command("start", async (ctx) => {
   await ctx.reply(greet, {
@@ -121,6 +132,7 @@ bot.callbackQuery(/^renew:/, async (ctx) => {
     await ctx.answerCallbackQuery();
   } else {
     waitingForRenewImage.add(userId);
+    pendingUUID.set(userId, { UUID: selected?.uuid! });
     await ctx.reply(renewTxt, { parse_mode: "Markdown" });
     await ctx.answerCallbackQuery();
   }
@@ -137,14 +149,74 @@ bot.callbackQuery(/^renewAccept:/, async (ctx) => {
   if (!pending)
     return await ctx.answerCallbackQuery({ text: "No pending request" });
 
+  const uuid = pendingUUID.get(userId)?.UUID!;
+
   pendingRenewals.delete(userId);
 
   // Update the user's config status or call your backend logic here
   // e.g., mark account as active
-  // const configs = renewCache[userId];
-  // if (configs) {
-  //   configs.forEach((c) => (c.status = true));
-  // }
+  const configs = renewCache[userId]?.filter(
+    (v) => v.status === false && v.uuid === uuid,
+  );
+
+  const cleaned = configs
+    ?.at(0)!
+    .email.replace(/^\p{Extended_Pictographic}\s*/u, "")!;
+
+  const headers = new Headers();
+  headers.set("Content-Type", "application/json");
+  headers.set("Accept", "application/json");
+  // Login if needed
+  if (!authToken) {
+    await loginToPanel(headers);
+  }
+  headers.set("Cookie", authToken!);
+
+  const settings = JSON.stringify({
+    clients: [
+      {
+        id: uuid,
+        flow: "",
+        email: cleaned,
+        limitIp: 0,
+        totalGB: GB(20),
+        expiryTime: unix30Days(),
+        enable: true,
+        tgId: userId,
+        subId: "",
+        comment: String(userId),
+        reset: 0,
+      },
+    ],
+  });
+
+  console.log(settings);
+
+  const body: AddClientBody = {
+    id: 2,
+    settings: settings,
+  };
+
+  const url = `${MAIN_ADDRESS}${BASE_PATH}${UPDATE_CLIENT_PATH}/${uuid}`;
+  console.log(url);
+
+  const req = new Request(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+    credentials: "include",
+  });
+
+  console.log("UUID:", uuid);
+  console.log("User configs in renewCache:", renewCache[userId]);
+  console.log("Settings JSON:", settings);
+  console.log("URL:", url);
+
+  const res = await fetch(req);
+  console.log(res.status);
+  const status = (await res.json()) as Partial<ListResp>;
+
+  console.log(status);
 
   await ctx.api.sendMessage(userId, "✅ درخواست شما تایید شد و حساب فعال شد!");
   await ctx.reply("تایید شد ✅");
