@@ -169,17 +169,18 @@ export async function userHasAccount(tgID: number) {
   let configs: Config[] = [];
   const inbounds = await getInbounds(headers);
 
-  for (let obj of inbounds.obj) {
-    for (let client of obj.settings.clients) {
+  inbounds.obj.forEach((obj) => {
+    obj.settings.clients.forEach((client, idx) => {
       if (tgID === Number(client.comment)) {
-        let statuss = client.enable;
         configs.push({
-          email: `${statuss ? "🟢" : "🛑"} ${client.email}`,
-          status: client.enable,
+          email: `${obj.clientStats[idx]?.enable ? "🟢" : "🛑"} ${client.email}`,
+          status: obj.clientStats[idx]?.enable!,
         });
       }
-    }
-  }
+    });
+  });
+
+  console.log(configs);
 
   return configs;
 }
