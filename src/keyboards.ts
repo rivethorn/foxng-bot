@@ -1,5 +1,5 @@
 import { Keyboard } from "grammy";
-import { mySubTxt, tutorialBtnTxt, renewSubBtn, buySubBtn } from "./messages";
+import { tutorialBtnTxt, renewSubBtn, buySubBtn, mySubBtn } from "./messages";
 
 export const shareContactKey = new Keyboard()
   .requestContact("☎️ ارسال شماره موبایل")
@@ -11,5 +11,5 @@ export const mainMenu = new Keyboard()
   .text(buySubBtn)
   .row()
   .text(tutorialBtnTxt)
-  .text(mySubTxt)
+  .text(mySubBtn)
   .resized();
