@@ -7,7 +7,11 @@ export const ADD_CLIENT_PATH = "/addClient";
 export const GET_INBOUNDS_PATH = "/list";
 export const UUID_PATH = "/panel/api/server/getNewUUID";
 
+export const ADMIN_ID = Number(process.env.ADMIN_ID!);
+
 export let authToken: string | null = null;
+
+export const renewCache: Record<number, Config[]> = {};
 
 /**
  *
