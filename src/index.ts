@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { Bot } from "grammy";
+import { Bot, Keyboard } from "grammy";
 import { mainMenu, oneM40G, oneM80G, renewMenu } from "./keyboards";
 import {
   greet,
@@ -15,6 +15,7 @@ import {
   renewTxt250,
   renewTxt450,
   resetBtn,
+  cancelBtn,
 } from "./messages";
 import { HandleTestAccount } from "./evaluationAcc";
 import { HandleRenewAccount } from "./renewAcc";
@@ -145,6 +146,7 @@ ${type}`,
       break;
 
     case resetBtn:
+    case cancelBtn:
       await ctx.deleteMessage();
 
       waitingForRenewImage.delete(userId);
@@ -160,16 +162,16 @@ ${type}`,
     case oneM40G:
       pendingConfigType.set(ctx.from.id, { type: "250" });
       await ctx.reply(renewTxt250, {
-        parse_mode: "Markdown",
-        reply_markup: { remove_keyboard: true },
+        parse_mode: "HTML",
+        reply_markup: new Keyboard().text(cancelBtn).resized(),
       });
       break;
 
     case oneM80G:
       pendingConfigType.set(ctx.from.id, { type: "450" });
       await ctx.reply(renewTxt450, {
-        parse_mode: "Markdown",
-        reply_markup: { remove_keyboard: true },
+        parse_mode: "HTML",
+        reply_markup: new Keyboard().text(cancelBtn).resized(),
       });
       break;
 
