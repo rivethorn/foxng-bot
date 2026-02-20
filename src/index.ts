@@ -16,6 +16,7 @@ import {
   renewTxt450,
   resetBtn,
   cancelBtn,
+  bigGreet,
 } from "./messages";
 import { HandleTestAccount } from "./evaluationAcc";
 import { HandleRenewAccount } from "./renewAcc";
@@ -49,7 +50,7 @@ const pendingConfig = new Map<number, { UUID: string; inboundID: number }>();
 const pendingConfigType = new Map<number, { type: TConfig }>();
 
 bot.command("start", async (ctx) => {
-  await ctx.reply(greet, {
+  await ctx.reply(bigGreet, {
     reply_markup: mainMenu,
   });
 });
