@@ -39,8 +39,6 @@ fi
 if ! command -v bun &> /dev/null; then
   echo "Installing Bun..."
   curl -fsSL https://bun.sh/install | bash
-  export BUN_INSTALL="/root/.bun"
-  export PATH="$BUN_INSTALL/bin:$PATH"
 else
   echo "Bun already installed."
 fi
@@ -69,19 +67,20 @@ fi
 # ---- Ask for ENV values ----
 echo
 echo "Configure environment variables:"
-read -p "BOT_TOKEN: " BOT_TOKEN
-read -p "PANEL_ADDRESS: " PANEL_ADDRESS
-read -p "PANEL_USERNAME: " PANEL_USERNAME
-read -s -p "PANEL_PASSWORD: " PANEL_PASSWORD
+read -r -p "BOT_TOKEN: " BOT_TOKEN
+read -r -p "PANEL_ADDRESS: " PANEL_ADDRESS
+read -r -p "PANEL_USERNAME: " PANEL_USERNAME
+read -r -s -p "PANEL_PASSWORD: " PANEL_PASSWORD
 echo
-read -p "ADMIN_ID: " ADMIN_ID
+read -r -p "ADMIN_ID: " ADMIN_ID
 
+# Write .env reliably
 cat > "$INSTALL_DIR/.env" <<EOF
-BOT_TOKEN=$BOT_TOKEN
-PANEL_ADDRESS=$PANEL_ADDRESS
-PANEL_USERNAME=$PANEL_USERNAME
-PANEL_PASSWORD=$PANEL_PASSWORD
-ADMIN_ID=$ADMIN_ID
+BOT_TOKEN=${BOT_TOKEN}
+PANEL_ADDRESS=${PANEL_ADDRESS}
+PANEL_USERNAME=${PANEL_USERNAME}
+PANEL_PASSWORD=${PANEL_PASSWORD}
+ADMIN_ID=${ADMIN_ID}
 EOF
 
 chmod 600 "$INSTALL_DIR/.env"
@@ -97,8 +96,8 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=$INSTALL_DIR
-ExecStart=/root/.bun/bin/$RUN_COMMAND
-Restart=always
+ExecStart=/root/.bun/bin/bun run start
+Restart=on-failure
 RestartSec=5
 EnvironmentFile=$INSTALL_DIR/.env
 User=root
@@ -107,7 +106,6 @@ User=root
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=full
-ProtectHome=true
 
 [Install]
 WantedBy=multi-user.target
@@ -116,7 +114,7 @@ EOF
 # ---- Enable + Start ----
 systemctl daemon-reload
 systemctl enable $SERVICE_NAME
-systemctl restart $SERVICE_NAME
+systemctl start $SERVICE_NAME
 
 echo
 echo "========================================="
