@@ -2,6 +2,11 @@
 
 set -e
 
+if [ ! -t 0 ]; then
+  echo "Please run this script directly in a terminal (not via pipe or redirect)."
+  exit 1
+fi
+
 ### ===== CONFIG =====
 REPO_URL="https://github.com/rivethorn/foxng-bot.git"
 APP_NAME="FoxNG"
