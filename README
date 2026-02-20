@@ -22,7 +22,7 @@ A Telegram bot that connects to you 3X-UI V2Ray VPN panel and let's you automate
 
 Usage:
 
-curl -fsSL https://raw.githubusercontent.com/rivethorn/foxng-bot/refs/heads/main/install.sh | bash
+bash <(curl -fsSL https://raw.githubusercontent.com/rivethorn/foxng-bot/refs/heads/main/install.sh)
 
 **IMPORTANT**
 Be sure to adjust the .env file correctly.
