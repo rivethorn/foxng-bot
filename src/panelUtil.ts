@@ -171,6 +171,8 @@ export async function userHasAccount(tgID: number) {
     await loginToPanel(headers);
   }
 
+  headers.set("Cookie", authToken!);
+
   let configs: Config[] = [];
   const inbounds = await getInbounds(headers);
 
@@ -190,4 +192,28 @@ export async function userHasAccount(tgID: number) {
   console.log(configs);
 
   return configs;
+}
+
+export async function getEmailFromTelID(userId: number) {
+  const headers = new Headers();
+  headers.set("Content-Type", "application/json");
+  headers.set("Accept", "application/json");
+
+  // Login if needed
+  if (!authToken) {
+    await loginToPanel(headers);
+  }
+
+  const inbounds = await getInbounds(headers);
+  let retClient: Client | undefined;
+
+  inbounds.obj.forEach((obj) => {
+    obj.settings.clients.forEach((client, idx) => {
+      if (userId === Number(client.comment)) {
+        retClient = client;
+      }
+    });
+  });
+
+  return retClient?.email;
 }

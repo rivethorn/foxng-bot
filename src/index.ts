@@ -20,6 +20,7 @@ import {
   authToken,
   BASE_PATH,
   GB,
+  getEmailFromTelID,
   loginToPanel,
   MAIN_ADDRESS,
   renewCache,
@@ -68,9 +69,11 @@ bot.on("message", async (ctx) => {
       // Save pending renewal
       pendingRenewals.set(userId, { photoFileId: photo.file_id });
 
+      const email = await getEmailFromTelID(userId);
+
       // Send to admin with inline buttons to accept or decline
       await ctx.api.sendPhoto(ADMIN_ID, photo.file_id, {
-        caption: `درخواست تمدید از طرف کاربر ${userId}`,
+        caption: `درخواست تمدید از طرف کاربر ${userId}  ${email}`,
         reply_markup: {
           inline_keyboard: [
             [
