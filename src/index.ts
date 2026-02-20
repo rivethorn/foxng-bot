@@ -35,7 +35,7 @@ const waitingForRenewImage = new Set<number>();
 
 // Track pending renewals by userId
 const pendingRenewals = new Map<number, { photoFileId: string }>();
-const pendingUUID = new Map<number, { UUID: string }>();
+const pendingUUID = new Map<number, { UUID: string; inboundID: number }>();
 
 bot.command("start", async (ctx) => {
   await ctx.reply(greet, {
@@ -132,7 +132,10 @@ bot.callbackQuery(/^renew:/, async (ctx) => {
     await ctx.answerCallbackQuery();
   } else {
     waitingForRenewImage.add(userId);
-    pendingUUID.set(userId, { UUID: selected?.uuid! });
+    pendingUUID.set(userId, {
+      UUID: selected?.uuid!,
+      inboundID: selected?.inbound_id!,
+    });
     await ctx.reply(renewTxt, { parse_mode: "Markdown" });
     await ctx.answerCallbackQuery();
   }
@@ -150,6 +153,7 @@ bot.callbackQuery(/^renewAccept:/, async (ctx) => {
     return await ctx.answerCallbackQuery({ text: "No pending request" });
 
   const uuid = pendingUUID.get(userId)?.UUID!;
+  const inbound_id = pendingUUID.get(userId)?.inboundID!;
 
   pendingRenewals.delete(userId);
 
@@ -193,7 +197,7 @@ bot.callbackQuery(/^renewAccept:/, async (ctx) => {
   console.log(settings);
 
   const body: AddClientBody = {
-    id: 2,
+    id: inbound_id,
     settings: settings,
   };
 

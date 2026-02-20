@@ -2,6 +2,7 @@ interface Config {
   email: string;
   status: boolean;
   uuid: string;
+  inbound_id: number;
 }
 
 interface User {

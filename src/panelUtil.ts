@@ -181,6 +181,7 @@ export async function userHasAccount(tgID: number) {
           email: `${obj.clientStats[idx]?.enable ? "🟢" : "🛑"} ${client.email}`,
           status: obj.clientStats[idx]?.enable!,
           uuid: client.id,
+          inbound_id: obj.clientStats[idx]?.inboundId!,
         });
       }
     });
