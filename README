@@ -20,6 +20,10 @@ FoxNG VPN Bot
 
 A Telegram bot that connects to you 3X-UI V2Ray VPN panel and let's you automate you misery.
 
+Usage:
+
+curl -fsSL https://raw.githubusercontent.com/rivethorn/foxng-bot/refs/heads/main/install.sh | bash
+
 **IMPORTANT**
 Be sure to adjust the .env file correctly.
 
