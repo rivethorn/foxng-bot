@@ -67,15 +67,15 @@ fi
 # ---- Ask for ENV values ----
 echo
 echo "Configure environment variables:"
-printf "  %s\n" "BOT_TOKEN: Your Telegram bot token (from BotFather)"
+printf "  %s" "BOT_TOKEN: Your Telegram bot token (from BotFather)"
 read BOT_TOKEN
-printf "  %s\n" "PANEL_ADDRESS: URL of your FoxNG panel (e.g. https://panel.example.com)"
+printf "  %s" "PANEL_ADDRESS: URL of your FoxNG panel (e.g. https://panel.example.com)"
 read PANEL_ADDRESS
-printf "  %s\n" "PANEL_USERNAME: Username for panel login"
+printf "  %s" "PANEL_USERNAME: Username for panel login"
 read PANEL_USERNAME
-printf "  %s\n" "PANEL_PASSWORD: Password for panel login"
+printf "  %s" "PANEL_PASSWORD: Password for panel login"
 read PANEL_PASSWORD
-printf "  %s\n" "ADMIN_ID: Your Telegram user ID (for admin access)"
+printf "  %s" "ADMIN_ID: Your Telegram user ID (for admin access)"
 read ADMIN_ID
 
 # Write .env reliably
