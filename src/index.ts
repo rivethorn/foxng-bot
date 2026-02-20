@@ -88,10 +88,13 @@ bot.on("message", async (ctx) => {
       pendingRenewals.set(userId, { photoFileId: photo.file_id });
 
       const email = await getEmailFromTelID(userId);
+      const type = pendingConfigType.get(userId)?.type!;
 
       // Send to admin with inline buttons to accept or decline
       await ctx.api.sendPhoto(ADMIN_ID, photo.file_id, {
-        caption: `درخواست تمدید از طرف کاربر ${userId}  ${email}`,
+        caption: `درخواست تمدید از طرف کاربر ${userId}  ${email}
+
+${type}`,
         reply_markup: {
           inline_keyboard: [
             [
@@ -343,7 +346,11 @@ bot.callbackQuery(/^renewDecline:/, async (ctx) => {
 
   pendingRenewals.delete(userId);
 
-  await ctx.api.sendMessage(userId, "❌ درخواست شما رد شد.");
+  await ctx.api.sendMessage(
+    userId,
+    `❌ متاسفانه درخواست شما رد شد.
+با پشتیبانی در ارتباط باشید.`,
+  );
   await ctx.reply("رد شد ❌");
   await ctx.answerCallbackQuery();
 });
