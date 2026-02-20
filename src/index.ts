@@ -11,6 +11,7 @@ import {
   mySubBtn,
   renewTxt,
   reciptReceiveTxt,
+  tutorialBtnTxt,
 } from "./messages";
 import { HandleTestAccount } from "./evaluationAcc";
 import { HandleRenewAccount } from "./renewAcc";
@@ -26,6 +27,8 @@ import {
   UPDATE_CLIENT_PATH,
 } from "./panelUtil";
 import { HandleCheckAccount } from "./checkAcc";
+import { InformUserExipry } from "./reminder";
+import nodeCron from "node-cron";
 
 dotenv.config({ quiet: true });
 
@@ -103,6 +106,9 @@ bot.on("message", async (ctx) => {
 
     case mySubBtn:
       await HandleCheckAccount(ctx);
+      break;
+
+    case tutorialBtnTxt:
       break;
 
     default:
@@ -246,4 +252,14 @@ bot.callbackQuery(/^renewDecline:/, async (ctx) => {
 });
 
 console.log("starting...");
+
+nodeCron.schedule(
+  "0 22 * * *",
+  () => {
+    InformUserExipry();
+  },
+  {
+    timezone: "Asia/Tehran",
+  },
+);
 await bot.start();
