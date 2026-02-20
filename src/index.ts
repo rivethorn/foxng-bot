@@ -329,16 +329,21 @@ bot.callbackQuery(/^renewAccept:/, async (ctx) => {
     credentials: "include",
   });
 
-  console.log("UUID:", uuid);
-  console.log("User configs in renewCache:", renewCache[userId]);
-  console.log("Settings JSON:", settings);
-  console.log("URL:", url);
-
   const res = await fetch(req);
-  console.log(res.status);
   const status = (await res.json()) as Partial<ListResp>;
 
   console.log(status);
+
+  const resetReq = new Request(
+    `${MAIN_ADDRESS}${BASE_PATH}/${inbound_id}/resetClientTraffic/${cleaned}`,
+    {
+      method: "POST",
+      headers,
+      credentials: "include",
+    },
+  );
+
+  await fetch(resetReq);
 
   await ctx.api.sendMessage(userId, "✅ درخواست شما تایید شد و حساب فعال شد!");
   await ctx.reply("تایید شد ✅");
