@@ -1,5 +1,11 @@
 import { Keyboard } from "grammy";
-import { tutorialBtnTxt, renewSubBtn, buySubBtn, mySubBtn } from "./messages";
+import {
+  tutorialBtnTxt,
+  renewSubBtn,
+  buySubBtn,
+  mySubBtn,
+  contactTxt,
+} from "./messages";
 
 export const shareContactKey = new Keyboard()
   .requestContact("☎️ ارسال شماره موبایل")
@@ -12,4 +18,6 @@ export const mainMenu = new Keyboard()
   .row()
   .text(tutorialBtnTxt)
   .text(mySubBtn)
+  .row()
+  .text(contactTxt)
   .resized();

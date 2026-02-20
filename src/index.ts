@@ -12,6 +12,7 @@ import {
   renewTxt,
   reciptReceiveTxt,
   tutorialBtnTxt,
+  contactTxt,
 } from "./messages";
 import { HandleTestAccount } from "./evaluationAcc";
 import { HandleRenewAccount } from "./renewAcc";
@@ -49,6 +50,14 @@ bot.command("start", async (ctx) => {
 
 bot.command("renew", async (ctx) => {
   await HandleRenewAccount(ctx);
+});
+
+bot.command("buy", async (ctx) => {
+  await ctx.reply(buySubTxt);
+});
+
+bot.command("info", async (ctx) => {
+  await HandleCheckAccount(ctx);
 });
 
 bot.on("message:contact", async (ctx) => {
@@ -116,7 +125,15 @@ bot.on("message", async (ctx) => {
       break;
 
     case tutorialBtnTxt:
-      await ctx.reply("آموزش به زودی اضافه میشه! لطفا صبور باشید.");
+      await ctx.reply("آموزش به زودی اضافه میشه! لطفا صبور باشید...");
+      break;
+
+    case contactTxt:
+      await ctx.reply(`
+برای ارتباط با پشتیبانی میتونید به آیدی زیر پیام بدید 👇
+
+🆔: @l0gicblade
+      `);
       break;
 
     default:

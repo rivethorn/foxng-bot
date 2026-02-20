@@ -12,7 +12,7 @@ export async function HandleCheckAccount(ctx: any) {
   if (configs.length === 0) {
     await ctx.reply(noSubFoundTxt);
   } else {
-    let statusTxt = "وضعیت حساب شما:\n\n";
+    let statusTxt = "🔋وضعیت حساب شما:\n\n";
 
     for (const conf of configs) {
       statusTxt += `${conf.email} - ${conf.status ? "فعال" : "به اتمام رسیده"}\n`;
