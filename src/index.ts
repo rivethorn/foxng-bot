@@ -89,7 +89,17 @@ bot.on("message", async (ctx) => {
       // Save pending renewal
       pendingRenewals.set(userId, { photoFileId: photo.file_id });
 
-      const email = await getEmailFromTelID(userId);
+      const uuid = pendingConfig.get(userId)?.UUID!;
+      const configs = renewCache[userId]?.filter(
+        (v) =>
+          (v.is_renewable && v.uuid === uuid) ||
+          (v.status === false && v.uuid === uuid),
+      );
+
+      const email = configs
+        ?.at(0)!
+        .email.replace(/^\p{Extended_Pictographic}\s*/u, "")!;
+
       const type = pendingConfigType.get(userId)?.type!;
 
       // Send to admin with inline buttons to accept or decline
