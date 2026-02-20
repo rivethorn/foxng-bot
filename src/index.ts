@@ -345,7 +345,7 @@ bot.callbackQuery(/^renewAccept:/, async (ctx) => {
 
   await fetch(resetReq);
 
-  await ctx.api.sendMessage(userId, "✅ درخواست شما تایید شد و حساب فعال شد!");
+  await ctx.api.sendMessage(userId, "اشتراک شما با موفقیت فعال شد ✅");
   await ctx.reply("تایید شد ✅");
   await ctx.answerCallbackQuery();
 });
@@ -367,8 +367,11 @@ bot.callbackQuery(/^renewDecline:/, async (ctx) => {
 
   await ctx.api.sendMessage(
     userId,
-    `❌ متاسفانه درخواست شما رد شد.
-با پشتیبانی در ارتباط باشید.`,
+    `‼️رسید پرداخت شما توسط ادمین رد شد‼️
+
+با آیدی پشتیبانی در ارتباط باشید👇🏼
+
+🆔: @foxngsup`,
   );
   await ctx.reply("رد شد ❌");
   await ctx.answerCallbackQuery();
