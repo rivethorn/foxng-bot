@@ -25,7 +25,6 @@ import {
   authToken,
   BASE_PATH,
   GB,
-  getEmailFromTelID,
   loginToPanel,
   MAIN_ADDRESS,
   renewCache,
@@ -358,6 +357,8 @@ bot.callbackQuery(/^renewDecline:/, async (ctx) => {
     return await ctx.answerCallbackQuery({ text: "No pending request" });
 
   pendingRenewals.delete(userId);
+  pendingConfig.delete(userId);
+  pendingConfigType.delete(userId);
 
   await ctx.api.sendMessage(
     userId,
