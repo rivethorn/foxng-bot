@@ -5,6 +5,7 @@ import {
   buySubBtn,
   mySubBtn,
   contactTxt,
+  resetBtn,
 } from "./messages";
 
 export const shareContactKey = new Keyboard()
@@ -20,7 +21,8 @@ export const mainMenu = new Keyboard()
   .text(mySubBtn)
   .row()
   .text(contactTxt)
-  .resized();
+  .resized()
+  .persistent();
 
 export const oneM40G = "اشتراک 1 ماهه 40 گیگابایت - 250 هزار تومان";
 export const oneM80G = "اشتراک 1 ماهه 80 گیگابایت - 450 هزار تومان";
@@ -29,4 +31,6 @@ export const renewMenu = new Keyboard()
   .text(oneM40G)
   .row()
   .text(oneM80G)
+  .row()
+  .text(resetBtn)
   .resized();

@@ -5,6 +5,7 @@ export const buySubBtn = "🚀 خرید اشتراک";
 export const renewSubBtn = "♻️ تمدید اشتراک";
 export const contactTxt = "👨🏼‍💻 ارتباط با پشتیبانی";
 export const tutorialBtnTxt = "آموزش اتصال به کانفیگ";
+export const resetBtn = "بازگشت به منو اصلی 🔙";
 export const creatingTestConfTxt = `در حال ساختن کانفیگ تست
 لطفا صبر کنید...`;
 export const welcomeTxt =

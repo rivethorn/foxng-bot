@@ -14,6 +14,7 @@ import {
   contactTxt,
   renewTxt250,
   renewTxt450,
+  resetBtn,
 } from "./messages";
 import { HandleTestAccount } from "./evaluationAcc";
 import { HandleRenewAccount } from "./renewAcc";
@@ -35,13 +36,16 @@ import nodeCron from "node-cron";
 
 dotenv.config({ quiet: true });
 
+type TConfig = "250" | "450";
+
 export const bot = new Bot(process.env.BOT_TOKEN!);
 
 const waitingForRenewImage = new Set<number>();
 
 // Track pending renewals by userId
 const pendingRenewals = new Map<number, { photoFileId: string }>();
-const pendingUUID = new Map<number, { UUID: string; inboundID: number }>();
+const pendingConfig = new Map<number, { UUID: string; inboundID: number }>();
+const pendingConfigType = new Map<number, { type: TConfig }>();
 
 bot.command("start", async (ctx) => {
   await ctx.reply(greet, {
@@ -71,10 +75,10 @@ bot.on("message:contact", async (ctx) => {
 });
 
 bot.on("message", async (ctx) => {
+  const userId = ctx.from.id;
   // Renewal screenshot flow (must run first)
-  if (waitingForRenewImage.has(ctx.from.id)) {
+  if (waitingForRenewImage.has(userId)) {
     if (ctx.message.photo) {
-      const userId = ctx.from.id;
       const photo = ctx.message.photo.at(-1);
       if (!photo) return;
 
@@ -98,7 +102,7 @@ bot.on("message", async (ctx) => {
         },
       });
 
-      await ctx.reply(reciptReceiveTxt);
+      await ctx.reply(reciptReceiveTxt, { reply_markup: mainMenu });
       return;
     }
   }
@@ -109,8 +113,8 @@ bot.on("message", async (ctx) => {
   switch (ctx.message.text) {
     case testConfBtn:
       console.log("test config requested");
-      console.log(ctx.from.id);
-      await HandleTestAccount(ctx.from.id, 2);
+      console.log(userId);
+      await HandleTestAccount(userId, 2);
       break;
 
     case buySubBtn:
@@ -137,17 +141,32 @@ bot.on("message", async (ctx) => {
       `);
       break;
 
-    case oneM40G:
-      await ctx.reply(renewTxt250, {
-        parse_mode: "Markdown",
+    case resetBtn:
+      await ctx.deleteMessage();
+
+      waitingForRenewImage.delete(userId);
+      pendingRenewals.delete(userId);
+      pendingConfig.delete(userId);
+      pendingConfigType.delete(userId);
+
+      await ctx.reply(greet, {
         reply_markup: mainMenu,
       });
       break;
 
+    case oneM40G:
+      pendingConfigType.set(ctx.from.id, { type: "250" });
+      await ctx.reply(renewTxt250, {
+        parse_mode: "Markdown",
+        reply_markup: { remove_keyboard: true },
+      });
+      break;
+
     case oneM80G:
+      pendingConfigType.set(ctx.from.id, { type: "450" });
       await ctx.reply(renewTxt450, {
         parse_mode: "Markdown",
-        reply_markup: mainMenu,
+        reply_markup: { remove_keyboard: true },
       });
       break;
 
@@ -178,7 +197,7 @@ bot.callbackQuery(/^renew:/, async (ctx) => {
     await ctx.answerCallbackQuery();
   } else {
     waitingForRenewImage.add(userId);
-    pendingUUID.set(userId, {
+    pendingConfig.set(userId, {
       UUID: selected?.uuid!,
       inboundID: selected?.inbound_id!,
     });
@@ -210,10 +229,13 @@ bot.callbackQuery(/^renewAccept:/, async (ctx) => {
   if (!pending)
     return await ctx.answerCallbackQuery({ text: "No pending request" });
 
-  const uuid = pendingUUID.get(userId)?.UUID!;
-  const inbound_id = pendingUUID.get(userId)?.inboundID!;
+  const uuid = pendingConfig.get(userId)?.UUID!;
+  const inbound_id = pendingConfig.get(userId)?.inboundID!;
+  const type = pendingConfigType.get(userId)?.type!;
 
   pendingRenewals.delete(userId);
+  pendingConfig.delete(userId);
+  pendingConfigType.delete(userId);
 
   // Update the user's config status or call your backend logic here
   // e.g., mark account as active
@@ -236,23 +258,44 @@ bot.callbackQuery(/^renewAccept:/, async (ctx) => {
   }
   headers.set("Cookie", authToken!);
 
-  const settings = JSON.stringify({
-    clients: [
-      {
-        id: uuid,
-        flow: "",
-        email: cleaned,
-        limitIp: 0,
-        totalGB: GB(20),
-        expiryTime: unix30Days(),
-        enable: true,
-        tgId: userId,
-        subId: "",
-        comment: String(userId),
-        reset: 0,
-      },
-    ],
-  });
+  let settings = "";
+  if (type === "250") {
+    settings = JSON.stringify({
+      clients: [
+        {
+          id: uuid,
+          flow: "",
+          email: cleaned,
+          limitIp: 0,
+          totalGB: GB(40),
+          expiryTime: unix30Days(),
+          enable: true,
+          tgId: userId,
+          subId: "",
+          comment: String(userId),
+          reset: 0,
+        },
+      ],
+    });
+  } else if (type === "450") {
+    settings = JSON.stringify({
+      clients: [
+        {
+          id: uuid,
+          flow: "",
+          email: cleaned,
+          limitIp: 0,
+          totalGB: GB(80),
+          expiryTime: unix30Days(),
+          enable: true,
+          tgId: userId,
+          subId: "",
+          comment: String(userId),
+          reset: 0,
+        },
+      ],
+    });
+  }
 
   console.log(settings);
 
