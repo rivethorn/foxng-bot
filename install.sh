@@ -70,13 +70,13 @@ echo "Configure environment variables:"
 printf "  %s\n" "BOT_TOKEN: Your Telegram bot token (from BotFather)"
 read BOT_TOKEN
 printf "  %s\n" "PANEL_ADDRESS: URL of your FoxNG panel (e.g. https://panel.example.com)"
-read "PANEL_ADDRESS: " PANEL_ADDRESS
+read PANEL_ADDRESS
 printf "  %s\n" "PANEL_USERNAME: Username for panel login"
-read "PANEL_USERNAME: " PANEL_USERNAME
+read PANEL_USERNAME
 printf "  %s\n" "PANEL_PASSWORD: Password for panel login"
-read "PANEL_PASSWORD: " PANEL_PASSWORD
+read PANEL_PASSWORD
 printf "  %s\n" "ADMIN_ID: Your Telegram user ID (for admin access)"
-read "ADMIN_ID: " ADMIN_ID
+read ADMIN_ID
 
 # Write .env reliably
 cat > "$INSTALL_DIR/.env" <<EOF
