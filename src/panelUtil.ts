@@ -179,10 +179,11 @@ export async function userHasAccount(tgID: number) {
   inbounds.obj.forEach((obj) => {
     obj.settings.clients.forEach((client, idx) => {
       if (tgID === Number(client.comment)) {
+        const remainingGB = client.totalGB - obj.clientStats[idx]?.allTime!;
         const renewable =
           (client.enable &&
             client.expiryTime - Date.now() < 3 * 24 * 60 * 60 * 1000) ||
-          (client.enable && client.totalGB <= GB(3));
+          (client.enable && remainingGB <= GB(3));
         configs.push({
           email: `${obj.clientStats[idx]?.enable ? (renewable ? "🟡" : "🟢") : "🔴"} ${client.email}`,
           status: obj.clientStats[idx]?.enable!,
