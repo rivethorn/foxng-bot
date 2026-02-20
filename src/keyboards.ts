@@ -21,3 +21,12 @@ export const mainMenu = new Keyboard()
   .row()
   .text(contactTxt)
   .resized();
+
+export const oneM40G = "اشتراک 1 ماهه 40 گیگابایت - 250 هزار تومان";
+export const oneM80G = "اشتراک 1 ماهه 80 گیگابایت - 450 هزار تومان";
+
+export const renewMenu = new Keyboard()
+  .text(oneM40G)
+  .row()
+  .text(oneM80G)
+  .resized();

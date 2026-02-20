@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { Bot } from "grammy";
-import { mainMenu } from "./keyboards";
+import { mainMenu, oneM40G, oneM80G, renewMenu } from "./keyboards";
 import {
   greet,
   testConfBtn,
@@ -9,10 +9,11 @@ import {
   renewSubBtn,
   statusEnabledTxt,
   mySubBtn,
-  renewTxt,
   reciptReceiveTxt,
   tutorialBtnTxt,
   contactTxt,
+  renewTxt250,
+  renewTxt450,
 } from "./messages";
 import { HandleTestAccount } from "./evaluationAcc";
 import { HandleRenewAccount } from "./renewAcc";
@@ -136,6 +137,20 @@ bot.on("message", async (ctx) => {
       `);
       break;
 
+    case oneM40G:
+      await ctx.reply(renewTxt250, {
+        parse_mode: "Markdown",
+        reply_markup: mainMenu,
+      });
+      break;
+
+    case oneM80G:
+      await ctx.reply(renewTxt450, {
+        parse_mode: "Markdown",
+        reply_markup: mainMenu,
+      });
+      break;
+
     default:
       break;
   }
@@ -167,7 +182,19 @@ bot.callbackQuery(/^renew:/, async (ctx) => {
       UUID: selected?.uuid!,
       inboundID: selected?.inbound_id!,
     });
-    await ctx.reply(renewTxt, { parse_mode: "Markdown" });
+
+    await ctx.reply(
+      `لطفا نوع اشتراک خود را انتخاب کنید:
+
+چنانچه نیاز به اشتراک با حجم بیشتر دارید، با پشتیبانی تماس بگیرید 👇
+
+🆔: @l0gicblade`,
+      {
+        reply_markup: renewMenu,
+      },
+    );
+
+    // await ctx.reply(renewTxt, { parse_mode: "Markdown" });
     await ctx.answerCallbackQuery();
   }
 });
