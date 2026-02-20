@@ -3,6 +3,7 @@ interface Config {
   status: boolean;
   uuid: string;
   inbound_id: number;
+  is_renewable: boolean;
 }
 
 interface User {

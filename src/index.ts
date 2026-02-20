@@ -47,6 +47,10 @@ bot.command("start", async (ctx) => {
   });
 });
 
+bot.command("renew", async (ctx) => {
+  await HandleRenewAccount(ctx);
+});
+
 bot.on("message:contact", async (ctx) => {
   const contact = ctx.message.contact;
 
@@ -112,6 +116,7 @@ bot.on("message", async (ctx) => {
       break;
 
     case tutorialBtnTxt:
+      await ctx.reply("آموزش به زودی اضافه میشه! لطفا صبور باشید.");
       break;
 
     default:
@@ -136,7 +141,7 @@ bot.callbackQuery(/^renew:/, async (ctx) => {
 
   await ctx.deleteMessage();
 
-  if (selected?.status) {
+  if (selected?.status === true && !selected.is_renewable) {
     await ctx.reply(statusEnabledTxt);
     await ctx.answerCallbackQuery();
   } else {
@@ -169,7 +174,9 @@ bot.callbackQuery(/^renewAccept:/, async (ctx) => {
   // Update the user's config status or call your backend logic here
   // e.g., mark account as active
   const configs = renewCache[userId]?.filter(
-    (v) => v.status === false && v.uuid === uuid,
+    (v) =>
+      (v.is_renewable && v.uuid === uuid) ||
+      (v.status === false && v.uuid === uuid),
   );
 
   const cleaned = configs
