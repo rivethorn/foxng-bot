@@ -24,17 +24,21 @@ async function getAllClients() {
 }
 
 export async function InformUserExipry() {
-  const TWO_DAYS = 2 * 24 * 60 * 60 * 1000;
+  const THREE_DAYS = 3 * 24 * 60 * 60 * 1000;
+  const GB = (n: number) => n * 1024 * 1024 * 1024;
   const clients = await getAllClients();
   const now = Date.now();
 
   clients.forEach((client) => {
-    if (client.expiryTime <= now + TWO_DAYS) {
+    if (
+      (client.expiryTime <= now + THREE_DAYS && client.enable) ||
+      (client.totalGB <= GB(3) && client.enable)
+    ) {
       bot.api.sendMessage(
         client.tgId || client.comment,
         `
 مشترک عزیز
-حساب شما به اسم ${client.email} تا دو روز دیگر به اتمام میرسد.
+حساب شما به اسم ${client.email} در حال انقضاست یا به زودی منقضی خواهد شد. لطفا برای جلوگیری از قطع شدن سرویس و ادامه استفاده از حساب خود، نسبت به تمدید اشتراک اقدام کنید.
 
 جهت تمدید اشتراک از دکمه "♻️ تمدید اشتراک" استفاده کنید.
 
