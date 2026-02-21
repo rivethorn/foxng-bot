@@ -31,8 +31,10 @@ export async function InformUserExipry() {
 
   clients.forEach((client) => {
     if (
-      (client.expiryTime <= now + THREE_DAYS && client.enable) ||
-      (client.totalGB <= GB(3) && client.enable)
+      (client.expiryTime <= now + THREE_DAYS &&
+        client.expiryTime !== 0 &&
+        client.enable) ||
+      (client.totalGB <= GB(3) && client.totalGB !== 0 && client.enable)
     ) {
       bot.api.sendMessage(
         client.tgId || client.comment,

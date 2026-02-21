@@ -182,8 +182,9 @@ export async function userHasAccount(tgID: number) {
         const remainingGB = client.totalGB - obj.clientStats[idx]?.allTime!;
         const renewable =
           (client.enable &&
+            client.expiryTime !== 0 &&
             client.expiryTime - Date.now() < 3 * 24 * 60 * 60 * 1000) ||
-          (client.enable && remainingGB <= GB(3));
+          (client.enable && client.totalGB !== 0 && remainingGB <= GB(3));
         configs.push({
           email: `${obj.clientStats[idx]?.enable ? (renewable ? "🟡" : "🟢") : "🔴"} ${client.email}`,
           status: obj.clientStats[idx]?.enable!,
